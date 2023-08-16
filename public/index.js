@@ -17,7 +17,7 @@ ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 class AnimationFrameLoop {
   running = false;
-  handle = null;
+  handleTick = null;
   lastRequestId = 0;
 
 
@@ -27,12 +27,12 @@ class AnimationFrameLoop {
    */
   handleAnimationFrame = (timestamp) => {
 
-    const handle = this.handle;
+    const handleTick = this.handleTick;
     // @todo calcular deltatime quando necessário
     const deltaTime = 0;
 
     try {
-      if (typeof handle == 'function') handle(timestamp, deltaTime);
+      if (typeof handleTick == 'function') handleTick(timestamp, deltaTime);
     } catch(error) {
       console.error(error)
     }
@@ -50,15 +50,29 @@ class AnimationFrameLoop {
   }
 }
 
-function handleFrame(timestamp, deltaTime) {
-  console.log(`timestamp: ${timestamp}, deltaTime: ${deltaTime}`);
+class BoidsSimulationApp {
+
+  setup() {
+    console.log('BoidsSimulationApp - Setup');
+    setDocumentTitle("Boids");
+  }
+
+  handleTick = (timestamp, deltaTime) => {
+    console.log(`BoidsSimulationApp - tickt\nimestamp: ${timestamp}, deltaTime: ${deltaTime}`);
+  }
+
+  // @todo João, ainda não sendo chamado esse método, pensar na forma mais clara de fazer o vínculo
+  shutdown() {
+    console.log('BoidsSimulationApp - shutdown');
+  }
 }
 
 const main = () => {
+  const app = new BoidsSimulationApp();
   const loop = new AnimationFrameLoop();
-  loop.handle = handleFrame;
+  loop.handleTick = app.handleTick;
 
-  setDocumentTitle("Boids");
+  app.setup();
   loop.start();
 }
 
