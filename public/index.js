@@ -17,8 +17,9 @@ ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 class AnimationFrameLoop {
   running = false;
-  handleTick = null;
   lastRequestId = 0;
+  handleTick = null;
+  handleClose = null;
 
 
   /**
@@ -39,7 +40,19 @@ class AnimationFrameLoop {
 
     if (this.running) {
       this.lastRequestId = requestAnimationFrame(this.handleAnimationFrame);
+    } else {
+      try {
+        this.lastRequestId = 0;
+        const handleClose = this.handleClose;
+        if (typeof handleClose == 'function') handleClose(timestamp, deltaTime);
+      } catch(error) {
+        console.error(error)
+      }
     }
+  };
+
+  callClose() {
+
   };
 
   start = () => {
@@ -47,6 +60,10 @@ class AnimationFrameLoop {
       this.running = true;
       this.lastRequestId = requestAnimationFrame(this.handleAnimationFrame);
     }
+  }
+
+  stop = () => {
+    this.running = false;
   }
 }
 
@@ -71,9 +88,13 @@ const main = () => {
   const app = new BoidsSimulationApp();
   const loop = new AnimationFrameLoop();
   loop.handleTick = app.handleTick;
+  loop.handleClose = app.shutdown;
 
   app.setup();
   loop.start();
+
+  // @note Apenas para testar o handleClose
+  // setTimeout(loop.stop, 1000);
 }
 
 main();
