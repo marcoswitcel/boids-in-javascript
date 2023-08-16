@@ -3,16 +3,7 @@ import { setDocumentTitle } from './utils.js';
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
 
-const canvas = document.createElement('canvas');
 
-canvas.width = CANVAS_WIDTH;
-canvas.height = CANVAS_HEIGHT;
-
-document.body.append(canvas);
-
-const ctx = canvas.getContext('2d');
-
-ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 
 class AnimationFrameLoop {
@@ -69,13 +60,34 @@ class AnimationFrameLoop {
 
 class BoidsSimulationApp {
 
-  setup() {
-    console.log('BoidsSimulationApp - Setup');
-    setDocumentTitle("Boids");
-  }
+  canvas;
+  ctx;
 
+  setup() {
+    setDocumentTitle("Boids");
+    console.log('BoidsSimulationApp - Setup');
+    
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = CANVAS_WIDTH;
+    this.canvas.height = CANVAS_HEIGHT;
+
+    document.body.append(this.canvas);
+
+    this.ctx = this.canvas.getContext('2d');
+  }
+  
   handleTick = (timestamp, deltaTime) => {
     console.log(`BoidsSimulationApp - tickt\nimestamp: ${timestamp}, deltaTime: ${deltaTime}`);
+    
+    // apenas rascunhando estrutura
+
+    // update vai aqui
+    update: {}
+
+    // renderização aqui
+    render: {
+      this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
   }
 
   // @todo João, ainda não sendo chamado esse método, pensar na forma mais clara de fazer o vínculo
