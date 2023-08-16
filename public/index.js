@@ -1,3 +1,4 @@
+import { setDocumentTitle } from './utils.js';
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
@@ -53,6 +54,12 @@ function handleFrame(timestamp, deltaTime) {
   console.log(`timestamp: ${timestamp}, deltaTime: ${deltaTime}`);
 }
 
-const loop = new AnimationFrameLoop();
-loop.handle = handleFrame;
-loop.start();
+const main = () => {
+  const loop = new AnimationFrameLoop();
+  loop.handle = handleFrame;
+
+  setDocumentTitle("Boids");
+  loop.start();
+}
+
+main();
