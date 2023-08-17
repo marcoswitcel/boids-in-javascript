@@ -1,5 +1,6 @@
 import { clearCanvas, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
+import { addInPlace } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
@@ -104,9 +105,10 @@ class BoidsBehavior {
    */
   static update(boids) {
     // @todo João, terminar aqui, apenas testando
+    const increment = vec2(1, 1);
+    
     for (const boid of boids) {
-      boid.x++;
-      boid.y++;
+      addInPlace(boid, increment);
     }
   }
 
