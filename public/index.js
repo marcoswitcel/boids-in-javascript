@@ -1,4 +1,6 @@
+import { clearCanvas, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
+import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
@@ -60,7 +62,16 @@ class AnimationFrameLoop {
 
 class BoidsSimulationApp {
 
+  /**
+   * @private
+   * @type {HTMLCanvasElement}
+   */
   canvas;
+
+  /**
+   * @private
+   * @type {CanvasRenderingContext2D}
+   */
   ctx;
 
   setup() {
@@ -86,7 +97,8 @@ class BoidsSimulationApp {
 
     // renderização aqui
     render: {
-      this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      drawRect(this.ctx, vec2(0, 0), this.canvas.width, this.canvas.height, 'blue');
+      //clearCanvas(this.ctx);
     }
   }
 
