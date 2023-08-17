@@ -60,6 +60,69 @@ class AnimationFrameLoop {
   }
 }
 
+/**
+ * @typedef {{ x: number, y: number, }} Boid
+ */
+
+/**
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns {Boid}
+ */
+const boid = (x, y) => ({ x, y, });
+
+class BoidsBehavior {
+
+  /**
+   * @type {Boid[]}
+   */
+  boids;
+
+  constructor(boids) {
+    this.boids = boids;
+  }
+
+  /**
+  * @returns {void}
+   */
+  update() {
+    BoidsBehavior.update(this.boids);
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx 
+   * @returns {void}
+   */
+  render(ctx) {
+    BoidsBehavior.render(ctx, this.boids);
+  }
+
+  /**
+   * @param {Boid[]} boids
+   * @returns {void}
+   */
+  static update(boids) {
+    // @todo João, terminar aqui, apenas testando
+    for (const boid of boids) {
+      boid.x++;
+      boid.y++;
+    }
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx 
+   * @param {Boid[]} boids
+   * @returns {void}
+   */
+  static render(ctx, boids) {
+    for (const boid of boids) {
+      const size = 20; // @note arbitrário e temporário esse valor
+      drawRect(ctx, boid, size, size, 'blue');
+    }
+  }
+}
+
 class BoidsSimulationApp {
 
   /**
@@ -74,6 +137,11 @@ class BoidsSimulationApp {
    */
   ctx;
 
+  /**
+   * @type {BoidsBehavior}
+   */
+  boidsBehavior;
+
   setup() {
     setDocumentTitle("Boids");
     console.log('BoidsSimulationApp - Setup');
@@ -85,6 +153,8 @@ class BoidsSimulationApp {
     document.body.append(this.canvas);
 
     this.ctx = this.canvas.getContext('2d');
+
+    this.boidsBehavior = new BoidsBehavior( [ boid(100, 150) ])
   }
   
   handleTick = (timestamp, deltaTime) => {
@@ -93,12 +163,15 @@ class BoidsSimulationApp {
     // apenas rascunhando estrutura
 
     // update vai aqui
-    update: {}
+    update: {
+      this.boidsBehavior.update();
+    }
 
     // renderização aqui
     render: {
-      drawRect(this.ctx, vec2(0, 0), this.canvas.width, this.canvas.height, 'blue');
-      //clearCanvas(this.ctx);
+      drawRect(this.ctx, vec2(0, 0), this.canvas.width, this.canvas.height, 'white');
+      
+      this.boidsBehavior.render(this.ctx);
     }
   }
 
