@@ -1,6 +1,6 @@
 import { clearCanvas, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { addInPlace } from './vector2-math.js';
+import { addInPlace, mag, normalize, normalizeInPlace, scalarMulInPlace, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
@@ -106,11 +106,16 @@ class BoidsBehavior {
    * @returns {void}
    */
   static update(boids) {
-    // @todo João, terminar aqui, apenas testando
-    const increment = vec2(1, 1);
+    // @todo João, implementando um target temporário
+    const target = vec2(300, 300);
     
     for (const boid of boids) {
-      addInPlace(boid.position, increment);
+      const distance = sub(target, boid.position);
+      const desiredVelocity = mag(distance) / 10;
+      normalizeInPlace(distance);
+      scalarMulInPlace(distance, desiredVelocity);
+
+      addInPlace(boid.position, distance);
     }
   }
 
