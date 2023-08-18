@@ -7,7 +7,9 @@ const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
 
 
-
+/**
+ * @typedef {import('./vectors.js').Vector2} Vector2
+ */
 
 class AnimationFrameLoop {
   running = false;
@@ -62,7 +64,7 @@ class AnimationFrameLoop {
 }
 
 /**
- * @typedef {{ x: number, y: number, }} Boid
+ * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, }} Boid
  */
 
 /**
@@ -71,7 +73,7 @@ class AnimationFrameLoop {
  * @param {number} y 
  * @returns {Boid}
  */
-const boid = (x, y) => ({ x, y, });
+const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, });
 
 class BoidsBehavior {
 
@@ -108,7 +110,7 @@ class BoidsBehavior {
     const increment = vec2(1, 1);
     
     for (const boid of boids) {
-      addInPlace(boid, increment);
+      addInPlace(boid.position, increment);
     }
   }
 
@@ -120,7 +122,7 @@ class BoidsBehavior {
   static render(ctx, boids) {
     for (const boid of boids) {
       const size = 20; // @note arbitrário e temporário esse valor
-      drawRect(ctx, boid, size, size, 'blue');
+      drawRect(ctx, boid.position, size, size, 'blue');
     }
   }
 }
