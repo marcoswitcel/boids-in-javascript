@@ -64,6 +64,26 @@ export const mulInPlace = (a, b) => {
 };
 
 /**
+ * @reference https://natureofcode.com/book/chapter-1-vectors/#vector-multiplication
+ * 
+ * @param {Vector2} a  
+ * @param {number} n  
+ * @returns {Vector2}
+ */
+export const scalarMul = (a, n) => ({ x: a.x * n, y: a.y * n, });
+
+/**
+ * @param {Vector2} a
+ * @param {number} n
+ * @returns {Vector2}
+ */
+export const scalarMulInPlace = (a, n) => {
+  a.x *= n;
+  a.y *= n;
+  return a;
+};
+
+/**
  * @reference https://natureofcode.com/book/chapter-1-vectors/#15-vector-magnitude
  * 
  * @param {Vector2} v vetor sendo analisado
