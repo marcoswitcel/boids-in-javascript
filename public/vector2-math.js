@@ -62,3 +62,11 @@ export const mulInPlace = (a, b) => {
   a.y *= b.y;
   return a;
 };
+
+/**
+ * @reference https://natureofcode.com/book/chapter-1-vectors/#15-vector-magnitude
+ * 
+ * @param {Vector2} v vetor sendo analisado
+ * @returns {number}
+ */
+export const mag = (v) => Math.sqrt(v.x * v.x + v.y  * v.y);
