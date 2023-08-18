@@ -16,6 +16,7 @@ class AnimationFrameLoop {
   lastRequestId = 0;
   handleTick = null;
   handleClose = null;
+  lastTimestamp = 0;
 
 
   /**
@@ -23,12 +24,19 @@ class AnimationFrameLoop {
    * @param {number} timestamp 
    */
   handleAnimationFrame = (timestamp) => {
+    // Pula a primeira execução para sabermos qual é a janela de tempo entre os frames
+    // desde a primeira invocação da função contida em `handleTick`
+    if (this.lastTimestamp == 0  && this.running) {
+      this.lastTimestamp = timestamp;
+      this.lastRequestId = requestAnimationFrame(this.handleAnimationFrame);
+      return;
+    }
 
-    const handleTick = this.handleTick;
-    // @todo calcular deltatime quando necessário
-    const deltaTime = 0;
-
+    const deltaTime = timestamp - this.lastTimestamp;
+    this.lastTimestamp = timestamp;
+    
     try {
+      const handleTick = this.handleTick;
       if (typeof handleTick == 'function') handleTick(timestamp, deltaTime);
     } catch(error) {
       console.error(error)
