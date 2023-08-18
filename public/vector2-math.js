@@ -130,3 +130,32 @@ export const scalarDivInPlace = (a, n) => {
  * @returns {number}
  */
 export const mag = (v) => Math.sqrt(v.x * v.x + v.y  * v.y);
+
+/**
+ * @reference https://natureofcode.com/book/chapter-1-vectors/#16-normalizing-vectors
+ * 
+ * @param {Vector2} v 
+ * @returns {Vector2}
+ */
+export const normalize = (v) => {
+  const magnitude = Math.sqrt(v.x * v.x + v.y * v.y);
+  
+  if (magnitude > 0) return { x: v.x / magnitude, y: v.y / magnitude, }
+
+  return { x: 0, y: 0, };
+}
+
+/**
+ * @param {Vector2} v 
+ * @returns {Vector2}
+ */
+export const normalizeInPlace = (v) => {
+  const magnitude = Math.sqrt(v.x * v.x + v.y  * v.y);
+  
+  if (magnitude > 0) {
+    v.x = v.x / magnitude;
+    v.y = v.y / magnitude;
+  }
+
+  return v;
+}
