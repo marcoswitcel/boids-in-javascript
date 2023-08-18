@@ -95,10 +95,11 @@ class BoidsBehavior {
   }
 
   /**
-  * @returns {void}
+   * @param {number} deltaTime
+   * @returns {void}
    */
-  update() {
-    BoidsBehavior.update(this.boids);
+  update(deltaTime) {
+    BoidsBehavior.update(this.boids, deltaTime);
   }
 
   /**
@@ -111,16 +112,17 @@ class BoidsBehavior {
 
   /**
    * @param {Boid[]} boids
+   * @param {number} deltaTime
    * @returns {void}
    */
-  static update(boids) {
+  static update(boids, deltaTime) {
     // @todo João, implementando um target temporário
     const target = vec2(300, 300);
     
     for (const boid of boids) {
       // @todo João, continuar aqui, vai precisar do deltatime pra fazer essa movimentação ficar como o imaginado
       const distance = sub(target, boid.position);
-      const desiredVelocity = mag(distance) / 10;
+      const desiredVelocity = mag(distance) / 5 * (deltaTime / 1000);
       normalizeInPlace(distance);
       scalarMulInPlace(distance, desiredVelocity);
 
@@ -182,7 +184,7 @@ class BoidsSimulationApp {
 
     // update vai aqui
     update: {
-      this.boidsBehavior.update();
+      this.boidsBehavior.update(deltaTime);
     }
 
     // renderização aqui
