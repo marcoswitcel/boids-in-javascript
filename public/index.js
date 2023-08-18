@@ -1,6 +1,6 @@
 import { clearCanvas, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { addInPlace, mag, normalize, normalizeInPlace, scalarMulInPlace, sub } from './vector2-math.js';
+import { addInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
@@ -122,7 +122,7 @@ class BoidsBehavior {
     for (const boid of boids) {
       // @todo João, continuar aqui, vai precisar do deltatime pra fazer essa movimentação ficar como o imaginado
       const distance = sub(target, boid.position);
-      const desiredVelocity = mag(distance) / 5 * (deltaTime / 1000);
+      const desiredVelocity = 10 * (deltaTime / 1000); // 10 pixels por segundo
       normalizeInPlace(distance);
       scalarMulInPlace(distance, desiredVelocity);
 
@@ -178,7 +178,7 @@ class BoidsSimulationApp {
   }
   
   handleTick = (timestamp, deltaTime) => {
-    console.log(`BoidsSimulationApp - tickt\nimestamp: ${timestamp}, deltaTime: ${deltaTime}`);
+    console.log(`BoidsSimulationApp - tick\ntimestamp: ${timestamp}, deltaTime: ${deltaTime}`);
     
     // apenas rascunhando estrutura
 
