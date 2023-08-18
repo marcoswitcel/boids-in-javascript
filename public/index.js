@@ -110,6 +110,7 @@ class BoidsBehavior {
     const target = vec2(300, 300);
     
     for (const boid of boids) {
+      // @todo João, continuar aqui, vai precisar do deltatime pra fazer essa movimentação ficar como o imaginado
       const distance = sub(target, boid.position);
       const desiredVelocity = mag(distance) / 10;
       normalizeInPlace(distance);
