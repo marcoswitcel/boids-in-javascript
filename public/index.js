@@ -91,6 +91,12 @@ class BoidsBehavior {
    */
   boids;
 
+  /**
+   * @private
+   * @type {Vector2}
+   */
+  static mouseTarget = vec2(0, 0);
+
   constructor(boids) {
     this.boids = boids;
   }
@@ -117,11 +123,8 @@ class BoidsBehavior {
    * @returns {void}
    */
   static update(boids, deltaTime) {
-    // @todo João, implementando um target temporário
-    const target = vec2(300, 300);
-    
     for (const boid of boids) {
-      const desiredVelocity = sub(target, boid.position);
+      const desiredVelocity = sub(BoidsBehavior.mouseTarget, boid.position);
       const maxSpeedSpeed = 10; // 10 pixels por segundo
       normalizeInPlace(desiredVelocity);
       scalarMulInPlace(desiredVelocity, maxSpeedSpeed);
@@ -138,10 +141,23 @@ class BoidsBehavior {
    * @returns {void}
    */
   static render(ctx, boids) {
+    const size = 20; // @note arbitrário e temporário esse valor
     for (const boid of boids) {
-      const size = 20; // @note arbitrário e temporário esse valor
       drawRect(ctx, boid.position, size, size, 'blue');
     }
+
+    // Desenhando target
+    drawRect(ctx, sub(BoidsBehavior.mouseTarget, vec2(size / 2, size / 2)), size, size, 'red');
+  }
+
+  /**
+   * @param {number} x 
+   * @param {number} y 
+   */
+  static updateMouseTarget(x, y) {
+    this.mouseTarget.x = x;
+    this.mouseTarget.y = y;
+    console.log(JSON.stringify(this.mouseTarget));
   }
 }
 
@@ -166,7 +182,7 @@ class BoidsSimulationApp {
 
   setup() {
     setDocumentTitle("Boids");
-    console.log('BoidsSimulationApp - Setup');
+    //console.log('BoidsSimulationApp - Setup');
     
     this.canvas = document.createElement('canvas');
     this.canvas.width = CANVAS_WIDTH;
@@ -178,10 +194,14 @@ class BoidsSimulationApp {
 
     const boids = Array(20).fill(0).map(() => boid(Math.random() * 300, Math.random() * 300));
     this.boidsBehavior = new BoidsBehavior(boids);
+
+    this.canvas.addEventListener('mousemove', (event) => {
+      BoidsBehavior.updateMouseTarget(event.offsetX, event.offsetY);
+    })
   }
   
   handleTick = (timestamp, deltaTime) => {
-    console.log(`BoidsSimulationApp - tick\ntimestamp: ${timestamp}, deltaTime: ${deltaTime}`);
+    //console.log(`BoidsSimulationApp - tick\ntimestamp: ${timestamp}, deltaTime: ${deltaTime}`);
     
     // apenas rascunhando estrutura
 
