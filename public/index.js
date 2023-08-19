@@ -1,3 +1,4 @@
+import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
 import { addInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
@@ -120,13 +121,14 @@ class BoidsBehavior {
     const target = vec2(300, 300);
     
     for (const boid of boids) {
-      // @todo João, continuar aqui, vai precisar do deltatime pra fazer essa movimentação ficar como o imaginado
-      const distance = sub(target, boid.position);
-      const desiredVelocity = 10 * (deltaTime / 1000); // 10 pixels por segundo
-      normalizeInPlace(distance);
-      scalarMulInPlace(distance, desiredVelocity);
+      const desiredVelocity = sub(target, boid.position);
+      const maxSpeedSpeed = 10; // 10 pixels por segundo
+      normalizeInPlace(desiredVelocity);
+      scalarMulInPlace(desiredVelocity, maxSpeedSpeed);
 
-      addInPlace(boid.position, distance);
+      const steerForce = sub(desiredVelocity, boid.velocity);
+
+      applyForce(boid, steerForce);
     }
   }
 
@@ -185,6 +187,22 @@ class BoidsSimulationApp {
     // update vai aqui
     update: {
       this.boidsBehavior.update(deltaTime);
+
+      /**
+       * Regras de computação do movimento abaixo
+       */
+      for (const boid of this.boidsBehavior.boids) {
+        // @note João, não tenho certeza se só multiplicar a velocidade e aceleração pelos milissegundos decorridos
+        // vair ser suficiente para deixar os cálculos flexíveis a janelas de tempo e número de ticks por segundo 
+        // variados. Falta testar, a ideia e observar atentamente ao longo do desenvolvimento se algum artefacto 
+        // temporal é percebido no sistema de movimento.
+        const elapsedMilliseconds = (deltaTime / 1000);
+        addInPlace(boid.velocity, scalarMul(boid.acceleration, elapsedMilliseconds));
+        addInPlace(boid.position, scalarMul(boid.velocity,     elapsedMilliseconds));
+        
+        // Aceleração precisa ser resetada sempre
+        scalarMulInPlace(boid.acceleration, 0);
+      }
     }
 
     // renderização aqui
