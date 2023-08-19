@@ -176,7 +176,8 @@ class BoidsSimulationApp {
 
     this.ctx = this.canvas.getContext('2d');
 
-    this.boidsBehavior = new BoidsBehavior( [ boid(100, 150) ])
+    const boids = Array(20).fill(0).map(() => boid(Math.random() * 300, Math.random() * 300));
+    this.boidsBehavior = new BoidsBehavior(boids);
   }
   
   handleTick = (timestamp, deltaTime) => {
