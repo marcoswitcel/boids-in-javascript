@@ -73,7 +73,7 @@ class AnimationFrameLoop {
 }
 
 /**
- * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, }} Boid
+ * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, size: number }} Boid
  */
 
 /**
@@ -82,7 +82,7 @@ class AnimationFrameLoop {
  * @param {number} y 
  * @returns {Boid}
  */
-const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, });
+const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, size: 10, });
 
 class BoidsBehavior {
 
@@ -136,20 +136,20 @@ class BoidsBehavior {
      * @todo João, terminar de testar e analisar como isso funciona
      * @todo João, considerar definir a separção em termos de tamanho, tipo, uma vez e meia do tamanho
      */
-    const desiredSeparation = 100;
-    BoidsBehavior.separate(boids, desiredSeparation, maxSpeed);
+    const desiredSeparationFactor = 5;
+    BoidsBehavior.separate(boids, desiredSeparationFactor, maxSpeed);
 
     BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget, maxSpeed);
   }
 
   /**
-   * 
    * @param {Boid[]} boids 
-   * @param {number} desiredSeparation 
+   * @param {number} desiredSeparationFactor 
    * @param {number} maxSpeed 
    */
-  static separate(boids, desiredSeparation, maxSpeed) {
+  static separate(boids, desiredSeparationFactor, maxSpeed) {
     for (const currentBoid of boids) {
+      const desiredSeparation = desiredSeparationFactor *  currentBoid.size;
       const sum = vec2(0, 0);
       let count = 0;
 
@@ -201,9 +201,10 @@ class BoidsBehavior {
    * @returns {void}
    */
   static render(ctx, boids) {
-    const size = 10; // @note arbitrário e temporário esse valor
     for (const boid of boids) {
-      drawCircle(ctx, boid.position, size, 'blue');
+      // @note João, boid.size é o número da largura esperada da figura, então no caso de uma esfera seria o diâmetro
+      const radius = boid.size / 2;
+      drawCircle(ctx, boid.position, radius, 'blue');
     }
 
     // Desenhando target
