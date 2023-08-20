@@ -97,6 +97,12 @@ class BoidsBehavior {
    */
   static mouseTarget = vec2(0, 0);
 
+  /**
+   * @private
+   * @type {number}
+   */
+  maxSpeed;
+
   constructor(boids) {
     this.boids = boids;
   }
@@ -123,7 +129,7 @@ class BoidsBehavior {
    * @returns {void}
    */
   static update(boids, deltaTime) {
-    const maxSpeedSpeed = 50; // 50 pixels por segundo
+    const maxSpeed = 50; // 50 pixels por segundo
 
     /**
      * @note https://natureofcode.com/book/chapter-6-autonomous-agents/#611-group-behaviors-or-lets-not-run-into-each-other
@@ -149,22 +155,31 @@ class BoidsBehavior {
 
         if (count > 0) {
           scalarDivInPlace(sum, count);
-          setMag(sum, maxSpeedSpeed);
+          setMag(sum, maxSpeed);
 
           const steer = sub(sum, currentBoid.velocity);
-          limitInPlace(steer, maxSpeedSpeed);
+          limitInPlace(steer, maxSpeed);
 
           applyForce(currentBoid, steer);
         }
       }
     }
 
-    steerBehavior:
+    BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget, maxSpeed);
+  }
+
+  /**
+   * @param {Boid[]} boids 
+   * @param {Vector2} target 
+   * @param {number} maxSpeed
+   * @returns {void}
+   */
+  static seek(boids, target, maxSpeed) {
     for (const boid of boids) {
-      const desiredVelocity = sub(BoidsBehavior.mouseTarget, boid.position);
+      const desiredVelocity = sub(target, boid.position);
 
       normalizeInPlace(desiredVelocity);
-      scalarMulInPlace(desiredVelocity, maxSpeedSpeed);
+      scalarMulInPlace(desiredVelocity, maxSpeed);
 
       const steerForce = sub(desiredVelocity, boid.velocity);
 
