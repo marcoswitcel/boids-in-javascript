@@ -1,7 +1,7 @@
 import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { addInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
+import { addInPlace, dist, divInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
@@ -123,9 +123,54 @@ class BoidsBehavior {
    * @returns {void}
    */
   static update(boids, deltaTime) {
+    const maxSpeedSpeed = 10; // 10 pixels por segundo
+
+    /**
+     * @note https://natureofcode.com/book/chapter-6-autonomous-agents/#611-group-behaviors-or-lets-not-run-into-each-other
+     * @todo João, terminar de testar e analisar como isso funciona
+     */
+    separateBehavior: {
+      const desiredSeparation = 30;
+
+      for (const currentBoid of boids) {
+        const sum = vec2(0, 0);
+        let count = 0;
+
+        for (const otherBoid of boids) {
+          const distance =  dist(currentBoid.position, otherBoid.position);
+          if (distance > 0 && distance < desiredSeparation) {
+            const diff = sub(currentBoid.position, otherBoid.position);
+            normalizeInPlace(diff);
+            addInPlace(sum, diff);
+            count++;
+          }
+        }
+
+        if (count > 0) {
+          scalarDivInPlace(sum, count);
+          
+          // @todo João, implementar uma função para setar magnetude no vetor
+          // setando a magnetude
+          normalizeInPlace(sum);
+          scalarMulInPlace(sum, maxSpeedSpeed);
+
+          const steer = sub(sum, currentBoid.velocity);
+
+          // @todo joão, implementar uma função limit para vetores
+          if (mag(steer) > maxSpeedSpeed) {
+            normalizeInPlace(steer);
+            scalarMulInPlace(steer, maxSpeedSpeed);
+          }
+
+          applyForce(currentBoid, steer);
+        }
+      }
+    }
+
+    steerBehavior:
     for (const boid of boids) {
       const desiredVelocity = sub(BoidsBehavior.mouseTarget, boid.position);
-      const maxSpeedSpeed = 10; // 10 pixels por segundo
+
       normalizeInPlace(desiredVelocity);
       scalarMulInPlace(desiredVelocity, maxSpeedSpeed);
 
@@ -141,9 +186,9 @@ class BoidsBehavior {
    * @returns {void}
    */
   static render(ctx, boids) {
-    const size = 20; // @note arbitrário e temporário esse valor
+    const size = 10; // @note arbitrário e temporário esse valor
     for (const boid of boids) {
-      drawRect(ctx, boid.position, size, size, 'blue');
+      drawCircle(ctx, boid.position, size, 'blue');
     }
 
     // Desenhando target
@@ -157,7 +202,6 @@ class BoidsBehavior {
   static updateMouseTarget(x, y) {
     this.mouseTarget.x = x;
     this.mouseTarget.y = y;
-    console.log(JSON.stringify(this.mouseTarget));
   }
 }
 

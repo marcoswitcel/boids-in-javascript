@@ -159,3 +159,11 @@ export const normalizeInPlace = (v) => {
 
   return v;
 }
+
+/**
+ * 
+ * @param {Vector2} a 
+ * @param {Vector2} b 
+ * @returns {number}
+ */
+export const dist = (a, b) => mag(sub(a, b));
