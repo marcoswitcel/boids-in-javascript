@@ -1,5 +1,5 @@
 import { applyForce } from './physical-concepts.js';
-import { clearCanvas, drawRect } from './rendering.js';
+import { clearCanvas, drawCircle, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
 import { addInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
@@ -147,7 +147,7 @@ class BoidsBehavior {
     }
 
     // Desenhando target
-    drawRect(ctx, sub(BoidsBehavior.mouseTarget, vec2(size / 2, size / 2)), size, size, 'red');
+    drawCircle(ctx, BoidsBehavior.mouseTarget, 5, 'red');
   }
 
   /**

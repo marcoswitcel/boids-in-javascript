@@ -18,6 +18,19 @@ export function drawRect(ctx, start, width, height, color) {
 
 /**
  * @param {CanvasRenderingContext2D} ctx 
+ * @param {Vector2} position centro do círculo
+ * @param {number} radius
+ * @param {string} color 
+ */
+export function drawCircle(ctx, position, radius, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
+  ctx.fill();
+}
+
+/**
+ * @param {CanvasRenderingContext2D} ctx 
  */
 export function clearCanvas(ctx) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
