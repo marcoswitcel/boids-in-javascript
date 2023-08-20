@@ -1,7 +1,7 @@
 import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { addInPlace, dist, divInPlace, limitinPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
+import { addInPlace, dist, divInPlace, limitInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
@@ -123,14 +123,14 @@ class BoidsBehavior {
    * @returns {void}
    */
   static update(boids, deltaTime) {
-    const maxSpeedSpeed = 10; // 10 pixels por segundo
+    const maxSpeedSpeed = 50; // 50 pixels por segundo
 
     /**
      * @note https://natureofcode.com/book/chapter-6-autonomous-agents/#611-group-behaviors-or-lets-not-run-into-each-other
      * @todo João, terminar de testar e analisar como isso funciona
      */
     separateBehavior: {
-      const desiredSeparation = 30;
+      const desiredSeparation = 100;
 
       for (const currentBoid of boids) {
         const sum = vec2(0, 0);
@@ -141,6 +141,7 @@ class BoidsBehavior {
           if (distance > 0 && distance < desiredSeparation) {
             const diff = sub(currentBoid.position, otherBoid.position);
             normalizeInPlace(diff);
+            scalarDivInPlace(diff, distance);
             addInPlace(sum, diff);
             count++;
           }
@@ -148,14 +149,10 @@ class BoidsBehavior {
 
         if (count > 0) {
           scalarDivInPlace(sum, count);
-          
-          // @todo João, implementar uma função para setar magnetude no vetor
-          // setando a magnetude
-          normalizeInPlace(sum);
-          scalarMulInPlace(sum, maxSpeedSpeed);
+          setMag(sum, maxSpeedSpeed);
 
           const steer = sub(sum, currentBoid.velocity);
-          limitinPlace(steer, maxSpeedSpeed);
+          limitInPlace(steer, maxSpeedSpeed);
 
           applyForce(currentBoid, steer);
         }

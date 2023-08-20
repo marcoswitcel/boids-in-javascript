@@ -187,12 +187,24 @@ export const limit = (v, n) => {
  * @param {number} n 
  * @returns {Vector2}
  */
-export const limitinPlace = (v, n) => {
+export const limitInPlace = (v, n) => {
   
   if (mag(v) > n) {
     normalizeInPlace(v);
     scalarMulInPlace(v, n);
   }
+
+  return v;
+}
+
+/**
+ * @param {Vector2} v 
+ * @param {number} m 
+ * @returns {Vector2}
+ */
+export const setMag = (v, m) => {
+  normalizeInPlace(v);
+  scalarMulInPlace(v, m);
 
   return v;
 }
