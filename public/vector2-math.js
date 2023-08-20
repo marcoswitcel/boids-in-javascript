@@ -167,3 +167,32 @@ export const normalizeInPlace = (v) => {
  * @returns {number}
  */
 export const dist = (a, b) => mag(sub(a, b));
+
+/**
+ * 
+ * @param {Vector2} v 
+ * @param {number} n 
+ * @returns {Vector2}
+ */
+export const limit = (v, n) => {
+  if (mag(v) > n) {
+    return scalarMulInPlace(normalize(v), n);
+  }
+  return { x: v.x, y: v.y, };
+}
+
+/**
+ * 
+ * @param {Vector2} v 
+ * @param {number} n 
+ * @returns {Vector2}
+ */
+export const limitinPlace = (v, n) => {
+  
+  if (mag(v) > n) {
+    normalizeInPlace(v);
+    scalarMulInPlace(v, n);
+  }
+
+  return v;
+}

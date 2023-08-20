@@ -1,7 +1,7 @@
 import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { addInPlace, dist, divInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
+import { addInPlace, dist, divInPlace, limitinPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
@@ -155,12 +155,7 @@ class BoidsBehavior {
           scalarMulInPlace(sum, maxSpeedSpeed);
 
           const steer = sub(sum, currentBoid.velocity);
-
-          // @todo joão, implementar uma função limit para vetores
-          if (mag(steer) > maxSpeedSpeed) {
-            normalizeInPlace(steer);
-            scalarMulInPlace(steer, maxSpeedSpeed);
-          }
+          limitinPlace(steer, maxSpeedSpeed);
 
           applyForce(currentBoid, steer);
         }
