@@ -1,7 +1,7 @@
 import { applyForce } from './physical-concepts.js';
-import { clearCanvas, drawCircle, drawRect } from './rendering.js';
+import { clearCanvas, drawCircle, drawLine, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { addInPlace, dist, divInPlace, limitInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub } from './vector2-math.js';
+import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 600;
@@ -205,6 +205,7 @@ class BoidsBehavior {
       // @note João, boid.size é o número da largura esperada da figura, então no caso de uma esfera seria o diâmetro
       const radius = boid.size / 2;
       drawCircle(ctx, boid.position, radius, 'blue');
+      drawLine(ctx, boid.position, add(boid.position, setMag(normalize(boid.velocity), boid.size)), 'blue')
     }
 
     // Desenhando target

@@ -35,3 +35,23 @@ export function drawCircle(ctx, position, radius, color) {
 export function clearCanvas(ctx) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
+
+/**
+ * 
+ * @param {CanvasRenderingContext2D} ctx 
+ * @param {Vector2} pStart 
+ * @param {Vector2} pEnd 
+ * @param {string} color 
+ * 
+ * @returns {void}
+ */
+export function drawLine(ctx, pStart, pEnd, color) {
+  ctx.strokeStyle = color;
+
+  ctx.beginPath();
+  ctx.moveTo(pStart.x, pStart.y);
+  ctx.lineTo(pEnd.x, pEnd.y);
+  ctx.closePath();
+  
+  ctx.stroke();
+}
