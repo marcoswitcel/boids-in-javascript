@@ -134,38 +134,46 @@ class BoidsBehavior {
     /**
      * @note https://natureofcode.com/book/chapter-6-autonomous-agents/#611-group-behaviors-or-lets-not-run-into-each-other
      * @todo João, terminar de testar e analisar como isso funciona
+     * @todo João, considerar definir a separção em termos de tamanho, tipo, uma vez e meia do tamanho
      */
-    separateBehavior: {
-      const desiredSeparation = 100;
-
-      for (const currentBoid of boids) {
-        const sum = vec2(0, 0);
-        let count = 0;
-
-        for (const otherBoid of boids) {
-          const distance =  dist(currentBoid.position, otherBoid.position);
-          if (distance > 0 && distance < desiredSeparation) {
-            const diff = sub(currentBoid.position, otherBoid.position);
-            normalizeInPlace(diff);
-            scalarDivInPlace(diff, distance);
-            addInPlace(sum, diff);
-            count++;
-          }
-        }
-
-        if (count > 0) {
-          scalarDivInPlace(sum, count);
-          setMag(sum, maxSpeed);
-
-          const steer = sub(sum, currentBoid.velocity);
-          limitInPlace(steer, maxSpeed);
-
-          applyForce(currentBoid, steer);
-        }
-      }
-    }
+    const desiredSeparation = 100;
+    BoidsBehavior.separate(boids, desiredSeparation, maxSpeed);
 
     BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget, maxSpeed);
+  }
+
+  /**
+   * 
+   * @param {Boid[]} boids 
+   * @param {number} desiredSeparation 
+   * @param {number} maxSpeed 
+   */
+  static separate(boids, desiredSeparation, maxSpeed) {
+    for (const currentBoid of boids) {
+      const sum = vec2(0, 0);
+      let count = 0;
+
+      for (const otherBoid of boids) {
+        const distance =  dist(currentBoid.position, otherBoid.position);
+        if (distance > 0 && distance < desiredSeparation) {
+          const diff = sub(currentBoid.position, otherBoid.position);
+          normalizeInPlace(diff);
+          scalarDivInPlace(diff, distance);
+          addInPlace(sum, diff);
+          count++;
+        }
+      }
+
+      if (count > 0) {
+        scalarDivInPlace(sum, count);
+        setMag(sum, maxSpeed);
+
+        const steer = sub(sum, currentBoid.velocity);
+        limitInPlace(steer, maxSpeed);
+
+        applyForce(currentBoid, steer);
+      }
+    }
   }
 
   /**
