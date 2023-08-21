@@ -73,7 +73,7 @@ class AnimationFrameLoop {
 }
 
 /**
- * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, size: number }} Boid
+ * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, size: number, maxSpeed: number }} Boid
  */
 
 /**
@@ -82,7 +82,7 @@ class AnimationFrameLoop {
  * @param {number} y 
  * @returns {Boid}
  */
-const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, size: 10, });
+const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, size: 10, maxSpeed: 50, });
 
 class BoidsBehavior {
 
@@ -96,12 +96,6 @@ class BoidsBehavior {
    * @type {Vector2}
    */
   static mouseTarget = vec2(0, 0);
-
-  /**
-   * @private
-   * @type {number}
-   */
-  maxSpeed;
 
   constructor(boids) {
     this.boids = boids;
@@ -129,22 +123,20 @@ class BoidsBehavior {
    * @returns {void}
    */
   static update(boids, deltaTime) {
-    const maxSpeed = 50; // 50 pixels por segundo
-
     /**
      * @note https://natureofcode.com/book/chapter-6-autonomous-agents/#611-group-behaviors-or-lets-not-run-into-each-other
      * @todo João, terminar de testar e analisar como isso funciona
      * @todo João, considerar definir a separção em termos de tamanho, tipo, uma vez e meia do tamanho
      */
     const desiredSeparationFactor = 5;
-    BoidsBehavior.separate(boids, desiredSeparationFactor, maxSpeed);
+    BoidsBehavior.separate(boids, desiredSeparationFactor);
 
     const desiredNeightborDistFactor = 5;
-    BoidsBehavior.align(boids, desiredNeightborDistFactor, maxSpeed);
+    BoidsBehavior.align(boids, desiredNeightborDistFactor);
 
     // @todo João, falta a coesão
 
-    BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget, maxSpeed);
+    BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget);
   }
 
   /**
@@ -152,9 +144,8 @@ class BoidsBehavior {
    * 
    * @param {Boid[]} boids 
    * @param {number} desiredSeparationFactor 
-   * @param {number} maxSpeed 
    */
-  static separate(boids, desiredSeparationFactor, maxSpeed) {
+  static separate(boids, desiredSeparationFactor) {
     for (const currentBoid of boids) {
       const desiredSeparation = desiredSeparationFactor *  currentBoid.size;
       const sum = vec2(0, 0);
@@ -173,10 +164,10 @@ class BoidsBehavior {
 
       if (count > 0) {
         scalarDivInPlace(sum, count);
-        setMag(sum, maxSpeed);
+        setMag(sum, currentBoid.maxSpeed);
 
         const steer = sub(sum, currentBoid.velocity);
-        limitInPlace(steer, maxSpeed);
+        limitInPlace(steer, currentBoid.maxSpeed);
 
         applyForce(currentBoid, steer);
       }
@@ -187,9 +178,8 @@ class BoidsBehavior {
    * 
    * @param {Boid[]} boids 
    * @param {number} desiredNeightbordistFactor 
-   * @param {number} maxSpeed 
    */
-  static align(boids, desiredNeightbordistFactor, maxSpeed) {
+  static align(boids, desiredNeightbordistFactor) {
     for (const currentBoid of boids) {
       const desiredNeightbordist = desiredNeightbordistFactor * currentBoid.size;
       const sum = vec2(0, 0);
@@ -206,10 +196,10 @@ class BoidsBehavior {
       if (count > 0) {
         scalarDivInPlace(sum, count);
         normalizeInPlace(sum);
-        scalarMulInPlace(sum, maxSpeed);
+        scalarMulInPlace(sum, currentBoid.maxSpeed);
 
         const steer = sub(sum, currentBoid.velocity);
-        limitInPlace(steer, maxSpeed); //@todo João, seria maxForce aqui, mas não tenho isso implementado ainda
+        limitInPlace(steer, currentBoid.maxSpeed); //@todo João, seria maxForce aqui, mas não tenho isso implementado ainda
         applyForce(currentBoid, steer);
       }
     }
@@ -218,15 +208,14 @@ class BoidsBehavior {
   /**
    * @param {Boid[]} boids 
    * @param {Vector2} target 
-   * @param {number} maxSpeed
    * @returns {void}
    */
-  static seek(boids, target, maxSpeed) {
+  static seek(boids, target) {
     for (const boid of boids) {
       const desiredVelocity = sub(target, boid.position);
 
       normalizeInPlace(desiredVelocity);
-      scalarMulInPlace(desiredVelocity, maxSpeed);
+      scalarMulInPlace(desiredVelocity, boid.maxSpeed);
 
       const steerForce = sub(desiredVelocity, boid.velocity);
 
