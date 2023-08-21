@@ -142,6 +142,8 @@ class BoidsBehavior {
     const desiredNeightborDistFactor = 5;
     BoidsBehavior.align(boids, desiredNeightborDistFactor, maxSpeed);
 
+    // @todo João, falta a coesão
+
     BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget, maxSpeed);
   }
 
