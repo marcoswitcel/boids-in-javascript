@@ -73,7 +73,7 @@ class AnimationFrameLoop {
 }
 
 /**
- * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, size: number, maxSpeed: number }} Boid
+ * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, size: number, maxSpeed: number, maxForce: number }} Boid
  */
 
 /**
@@ -82,7 +82,7 @@ class AnimationFrameLoop {
  * @param {number} y 
  * @returns {Boid}
  */
-const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, size: 10, maxSpeed: 50, });
+const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, size: 10, maxSpeed: 50, maxForce: 10, });
 
 class BoidsBehavior {
 
@@ -167,7 +167,7 @@ class BoidsBehavior {
         setMag(sum, currentBoid.maxSpeed);
 
         const steer = sub(sum, currentBoid.velocity);
-        limitInPlace(steer, currentBoid.maxSpeed);
+        limitInPlace(steer, currentBoid.maxForce);
 
         applyForce(currentBoid, steer);
       }
@@ -199,7 +199,8 @@ class BoidsBehavior {
         scalarMulInPlace(sum, currentBoid.maxSpeed);
 
         const steer = sub(sum, currentBoid.velocity);
-        limitInPlace(steer, currentBoid.maxSpeed); //@todo João, seria maxForce aqui, mas não tenho isso implementado ainda
+        limitInPlace(steer, currentBoid.maxForce);
+
         applyForce(currentBoid, steer);
       }
     }
@@ -218,6 +219,7 @@ class BoidsBehavior {
       scalarMulInPlace(desiredVelocity, boid.maxSpeed);
 
       const steerForce = sub(desiredVelocity, boid.velocity);
+      limitInPlace(steerForce, boid.maxForce);
 
       applyForce(boid, steerForce);
     }
