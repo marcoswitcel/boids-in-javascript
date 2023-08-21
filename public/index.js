@@ -139,10 +139,15 @@ class BoidsBehavior {
     const desiredSeparationFactor = 5;
     BoidsBehavior.separate(boids, desiredSeparationFactor, maxSpeed);
 
+    const desiredNeightborDistFactor = 5;
+    BoidsBehavior.align(boids, desiredNeightborDistFactor, maxSpeed);
+
     BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget, maxSpeed);
   }
 
   /**
+   * @todo João, maxSpeed deveria ser uma coisa do boid não do manager? acho que seria mais interessante
+   * 
    * @param {Boid[]} boids 
    * @param {number} desiredSeparationFactor 
    * @param {number} maxSpeed 
@@ -171,6 +176,38 @@ class BoidsBehavior {
         const steer = sub(sum, currentBoid.velocity);
         limitInPlace(steer, maxSpeed);
 
+        applyForce(currentBoid, steer);
+      }
+    }
+  }
+
+  /**
+   * 
+   * @param {Boid[]} boids 
+   * @param {number} desiredNeightbordistFactor 
+   * @param {number} maxSpeed 
+   */
+  static align(boids, desiredNeightbordistFactor, maxSpeed) {
+    for (const currentBoid of boids) {
+      const desiredNeightbordist = desiredNeightbordistFactor * currentBoid.size;
+      const sum = vec2(0, 0);
+      let count = 0;
+
+      for (const otherBoid of boids) {
+        const distance =  dist(currentBoid.position, otherBoid.position);
+        if (distance > 0 && distance < desiredNeightbordist) {
+          addInPlace(sum, otherBoid.velocity);
+          count++;
+        }
+      }
+
+      if (count > 0) {
+        scalarDivInPlace(sum, count);
+        normalizeInPlace(sum);
+        scalarMulInPlace(sum, maxSpeed);
+
+        const steer = sub(sum, currentBoid.velocity);
+        limitInPlace(steer, maxSpeed); //@todo João, seria maxForce aqui, mas não tenho isso implementado ainda
         applyForce(currentBoid, steer);
       }
     }
