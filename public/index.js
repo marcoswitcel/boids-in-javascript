@@ -82,7 +82,8 @@ class AnimationFrameLoop {
  * @param {number} y 
  * @returns {Boid}
  */
-const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 }, size: 10, maxSpeed: 50, maxForce: 10, });
+const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 },
+                          size: 10, maxSpeed: 10, maxForce: 10, });
 
 class BoidsBehavior {
 
@@ -131,8 +132,10 @@ class BoidsBehavior {
     const desiredSeparationFactor = 5;
     BoidsBehavior.separate(boids, desiredSeparationFactor);
 
-    const desiredNeightborDistFactor = 5;
-    BoidsBehavior.align(boids, desiredNeightborDistFactor);
+    const desiredNeightbordistFactor = 5;
+    BoidsBehavior.align(boids, desiredNeightbordistFactor);
+
+    BoidsBehavior.cohesion(boids, desiredNeightbordistFactor);
 
     // @todo João, falta a coesão
 
@@ -202,6 +205,37 @@ class BoidsBehavior {
         limitInPlace(steer, currentBoid.maxForce);
 
         applyForce(currentBoid, steer);
+      }
+    }
+  }
+
+  /**
+   * 
+   * @param {Boid[]} boids 
+   * @param {number} desiredNeightbordistFactor 
+   */
+  static cohesion(boids, desiredNeightbordistFactor) {
+    for (const currentBoid of boids) {
+      const desiredNeightbordist = desiredNeightbordistFactor * currentBoid.size;
+      const sum = vec2(0, 0);
+      let count = 0;
+
+      for (const otherBoid of boids) {
+        const distance =  dist(currentBoid.position, otherBoid.position);
+        if (distance > 0 && distance < desiredNeightbordist) {
+          addInPlace(sum, otherBoid.position);
+          count++;
+        }
+      }
+
+      if (count > 0) {
+        scalarDivInPlace(sum, count);
+
+        /**
+         * @todo João, por causa da forma como implementei o resultado não está de acordo com os exemplos
+         * @reference https://natureofcode.com/book/chapter-6-autonomous-agents/#613-flocking
+         */
+        // BoidsBehavior.seek(boids, sum);
       }
     }
   }
