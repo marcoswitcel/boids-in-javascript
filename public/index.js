@@ -397,6 +397,7 @@ class BoidsSimulationApp {
 
     this.canvas.addEventListener('mousemove', (event) => {
       BoidsBehavior.updateMouseTarget(event.offsetX, event.offsetY);
+      this.zoomedCam.position = vec2(event.offsetX, event.offsetY);
     })
   }
   
