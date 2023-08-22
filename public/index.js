@@ -83,7 +83,7 @@ class AnimationFrameLoop {
  * @returns {Boid}
  */
 const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 },
-                          size: 10, maxSpeed: 10, maxForce: 10, });
+                          size: 10, maxSpeed: 50, maxForce: 10, });
 
 class BoidsBehavior {
 
@@ -131,13 +131,9 @@ class BoidsBehavior {
      */
     const desiredSeparationFactor = 5;
     BoidsBehavior.separate(boids, desiredSeparationFactor);
-
     const desiredNeightbordistFactor = 5;
     BoidsBehavior.align(boids, desiredNeightbordistFactor);
-
     BoidsBehavior.cohesion(boids, desiredNeightbordistFactor);
-
-    // @todo João, falta a coesão
 
     BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget);
   }
@@ -335,7 +331,7 @@ class BoidsSimulationApp {
       this.boidsBehavior.update(deltaTime);
 
       /**
-       * Regras de computação do movimento abaixo
+       * Regras de computação do movimento abaixo (cinemática / física)
        */
       for (const boid of this.boidsBehavior.boids) {
         // @note João, não tenho certeza se só multiplicar a velocidade e aceleração pelos milissegundos decorridos
