@@ -114,11 +114,10 @@ class BoidsBehavior {
   /**
    * @param {Camera} camera
    * @param {CanvasRenderingContext2D} ctx 
-   * @param {number} scale
    * @returns {void}
    */
-  render(camera, ctx, scale = 1) {
-    BoidsBehavior.render(camera, ctx, this.boids, scale);
+  render(camera, ctx) {
+    BoidsBehavior.render(camera, ctx, this.boids);
   }
 
   /**
@@ -266,11 +265,11 @@ class BoidsBehavior {
    * @param {Camera} camera
    * @param {CanvasRenderingContext2D} ctx 
    * @param {Boid[]} boids
-   * @param {number} scale
    * @returns {void}
    */
-  static render(camera, ctx, boids, scale = 1) {
+  static render(camera, ctx, boids) {
     const scaleVector = vec2(ctx.canvas.width / camera.dimensions.x, ctx.canvas.height / camera.dimensions.y);
+    const scale = (scaleVector.x + scaleVector.y) / 2;
     const transformVector = subInPlace(vec2(0, 0), mulInPlace(sub(camera.position, scalarDiv(camera.dimensions, 2)), scaleVector));
 
     for (const boid of boids) {
@@ -400,11 +399,11 @@ class BoidsSimulationApp {
       this.zoomedCam.position = vec2(event.offsetX, event.offsetY);
     });
 
-    let scale = 1;
+    let scale = 1; // @todo João, analisar aonde esse campo ficaria bem
     this.canvas.addEventListener('wheel', (event) => {
       scale += event.deltaY * 0.001;
       console.log(scale);
-      scale = between(scale, 1, 2);
+      scale = between(scale, 1, 2); // @note João, não testei muito, mas aparentemente funciona bem com diferenças maiores
       this.zoomedCam.dimensions = vec2(CANVAS_WIDTH / scale, CANVAS_HEIGHT / scale)
       console.log(JSON.stringify(this.zoomedCam.dimensions));
     });
