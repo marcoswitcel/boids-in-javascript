@@ -5,8 +5,8 @@ import { setDocumentTitle } from './utils.js';
 import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 500;
+const CANVAS_WIDTH = 800 * .7;
+const CANVAS_HEIGHT = 500 * .7;
 
 
 /**
