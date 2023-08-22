@@ -1,7 +1,7 @@
 import { seeking } from './boid.js';
 import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawLine, drawRect } from './rendering.js';
-import { setDocumentTitle } from './utils.js';
+import { between, setDocumentTitle } from './utils.js';
 import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mul, mulInPlace, normalize, normalizeInPlace, scalarDiv, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub, subInPlace } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
@@ -398,7 +398,16 @@ class BoidsSimulationApp {
     this.canvas.addEventListener('mousemove', (event) => {
       BoidsBehavior.updateMouseTarget(event.offsetX, event.offsetY);
       this.zoomedCam.position = vec2(event.offsetX, event.offsetY);
-    })
+    });
+
+    let scale = 1;
+    this.canvas.addEventListener('wheel', (event) => {
+      scale += event.deltaY * 0.001;
+      console.log(scale);
+      scale = between(scale, 1, 2);
+      this.zoomedCam.dimensions = vec2(CANVAS_WIDTH / scale, CANVAS_HEIGHT / scale)
+      console.log(JSON.stringify(this.zoomedCam.dimensions));
+    });
   }
   
   handleTick = (timestamp, deltaTime) => {
