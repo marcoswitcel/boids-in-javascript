@@ -2,7 +2,7 @@ import { seeking } from './boid.js';
 import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawLine, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mulInPlace, normalize, normalizeInPlace, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub } from './vector2-math.js';
+import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mul, mulInPlace, normalize, normalizeInPlace, scalarDiv, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 800 * .7;
@@ -112,12 +112,13 @@ class BoidsBehavior {
   }
 
   /**
+   * @param {Camera} camera
    * @param {CanvasRenderingContext2D} ctx 
    * @param {number} scale
    * @returns {void}
    */
-  render(ctx, scale = 1) {
-    BoidsBehavior.render(ctx, this.boids, scale);
+  render(camera, ctx, scale = 1) {
+    BoidsBehavior.render(camera, ctx, this.boids, scale);
   }
 
   /**
@@ -262,22 +263,30 @@ class BoidsBehavior {
    * um objeto câmera e renderizar do ponto de vista dessa câmera.
    * @todo João, termina de implementar suporte a zoom e definir quando pode ser ativado
    * 
+   * @param {Camera} camera
    * @param {CanvasRenderingContext2D} ctx 
    * @param {Boid[]} boids
    * @param {number} scale
    * @returns {void}
    */
-  static render(ctx, boids, scale = 1) {
+  static render(camera, ctx, boids, scale = 1) {
+    const scaleVector = vec2(ctx.canvas.width / camera.dimensions.x, ctx.canvas.height / camera.dimensions.y);
+    const transformVector = vec2(0, 0); // @todo João, terminar aqui
+
     for (const boid of boids) {
-      // @note João, boid.size é o número da largura esperada da figura, então no caso de uma esfera seria o diâmetro
-      const radius = boid.size / 2;
-      const position = scalarMul(boid.position, scale);
-      drawCircle(ctx, position, radius * scale, 'blue');
-      drawLine(ctx, position, add(position, setMag(normalize(boid.velocity), boid.size * scale)), 'blue', scale)
+      if (camera.isPointInsideVisibleRange(boid.position)) {
+        // @note João, boid.size é o número da largura esperada da figura, então no caso de uma esfera seria o diâmetro
+        const radius = boid.size / 2;
+        const position = add(transformVector, mul(boid.position, scaleVector));
+        drawCircle(ctx, position, radius * scale, 'blue');
+        drawLine(ctx, position, add(position, mul(normalize(boid.velocity), scalarMul(scaleVector, boid.size))), 'blue', scale)
+      }
     }
 
-    // Desenhando target
-    drawCircle(ctx, scalarMul(BoidsBehavior.mouseTarget, scale), 5 * scale, 'red');
+    if (camera.isPointInsideVisibleRange(BoidsBehavior.mouseTarget)) {
+      // Desenhando target
+      drawCircle(ctx, add(transformVector, mul(BoidsBehavior.mouseTarget, scaleVector)), 5 * scale, 'red');
+    }
   }
 
   /**
@@ -287,6 +296,36 @@ class BoidsBehavior {
   static updateMouseTarget(x, y) {
     this.mouseTarget.x = x;
     this.mouseTarget.y = y;
+  }
+}
+
+class Camera {
+  
+  /**
+   * @type {Vector2}
+   */
+  position;
+
+  /**
+   * @type {Vector2}
+   */
+  dimensions;
+
+  constructor(position, dimensions) {
+    this.position = position;
+    this.dimensions = dimensions;
+  }
+
+  /**
+   * @param {Vector2} point 
+   * 
+   * @returns {boolean}
+   */
+  isPointInsideVisibleRange(point) {
+    const start = sub(this.position, scalarDiv(this.dimensions, 2));
+    const end = add(this.position, scalarDiv(this.dimensions, 2));
+    return start.x <= point.x && point.x <= end.x &&
+          start.y <= point.y && point.y <= end.y;
   }
 }
 
@@ -317,6 +356,18 @@ class BoidsSimulationApp {
   ctxZoom;
 
   /**
+   * @private
+   * @type {Camera}
+   */
+  camera;
+
+  /**
+   * @private
+   * @type {Camera}
+   */
+  zoomedCam;
+
+  /**
    * @type {BoidsBehavior}
    */
   boidsBehavior;
@@ -331,6 +382,9 @@ class BoidsSimulationApp {
     this.canvas.height = CANVAS_HEIGHT;
     this.zoomCanvas.width = CANVAS_WIDTH;
     this.zoomCanvas.height = CANVAS_HEIGHT;
+
+    this.camera = new Camera(vec2(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2), vec2(CANVAS_WIDTH, CANVAS_HEIGHT));
+    this.zoomedCam = new Camera(vec2(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2), vec2(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2));
 
     document.body.append(this.canvas);
     document.body.append(this.zoomCanvas);
@@ -377,8 +431,8 @@ class BoidsSimulationApp {
       drawRect(this.ctx, vec2(0, 0), this.canvas.width, this.canvas.height, 'white');
       drawRect(this.ctxZoom, vec2(0, 0), this.zoomCanvas.width, this.zoomCanvas.height, '#333');
       
-      this.boidsBehavior.render(this.ctx);
-      this.boidsBehavior.render(this.ctxZoom, 2);
+      this.boidsBehavior.render(this.camera, this.ctx);
+      this.boidsBehavior.render(this.zoomedCam, this.ctxZoom);
     }
   }
 
