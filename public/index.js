@@ -273,7 +273,7 @@ class BoidsBehavior {
       const radius = boid.size / 2;
       const position = scalarMul(boid.position, scale);
       drawCircle(ctx, position, radius * scale, 'blue');
-      drawLine(ctx, position, add(position, setMag(normalize(boid.velocity), boid.size * scale)), 'blue')
+      drawLine(ctx, position, add(position, setMag(normalize(boid.velocity), boid.size * scale)), 'blue', scale)
     }
 
     // Desenhando target

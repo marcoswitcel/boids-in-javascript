@@ -42,12 +42,14 @@ export function clearCanvas(ctx) {
  * @param {Vector2} pStart 
  * @param {Vector2} pEnd 
  * @param {string} color 
+ * @param {number} lineWidth
  * 
  * @returns {void}
  */
-export function drawLine(ctx, pStart, pEnd, color) {
+export function drawLine(ctx, pStart, pEnd, color, lineWidth = 1) {
   ctx.strokeStyle = color;
 
+  ctx.lineWidth = lineWidth;
   ctx.beginPath();
   ctx.moveTo(pStart.x, pStart.y);
   ctx.lineTo(pEnd.x, pEnd.y);
