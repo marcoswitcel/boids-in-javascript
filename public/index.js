@@ -113,10 +113,11 @@ class BoidsBehavior {
 
   /**
    * @param {CanvasRenderingContext2D} ctx 
+   * @param {number} scale
    * @returns {void}
    */
-  render(ctx) {
-    BoidsBehavior.render(ctx, this.boids);
+  render(ctx, scale = 1) {
+    BoidsBehavior.render(ctx, this.boids, scale);
   }
 
   /**
@@ -257,20 +258,26 @@ class BoidsBehavior {
   }
 
   /**
+   * @todo João, pra fazer zoom de uma forma legal, acho que o melhor seria inserir
+   * um objeto câmera e renderizar do ponto de vista dessa câmera.
+   * @todo João, termina de implementar suporte a zoom e definir quando pode ser ativado
+   * 
    * @param {CanvasRenderingContext2D} ctx 
    * @param {Boid[]} boids
+   * @param {number} scale
    * @returns {void}
    */
-  static render(ctx, boids) {
+  static render(ctx, boids, scale = 1) {
     for (const boid of boids) {
       // @note João, boid.size é o número da largura esperada da figura, então no caso de uma esfera seria o diâmetro
       const radius = boid.size / 2;
-      drawCircle(ctx, boid.position, radius, 'blue');
-      drawLine(ctx, boid.position, add(boid.position, setMag(normalize(boid.velocity), boid.size)), 'blue')
+      const position = scalarMul(boid.position, scale);
+      drawCircle(ctx, position, radius * scale, 'blue');
+      drawLine(ctx, position, add(position, setMag(normalize(boid.velocity), boid.size * scale)), 'blue')
     }
 
     // Desenhando target
-    drawCircle(ctx, BoidsBehavior.mouseTarget, 5, 'red');
+    drawCircle(ctx, scalarMul(BoidsBehavior.mouseTarget, scale), 5 * scale, 'red');
   }
 
   /**
@@ -293,9 +300,21 @@ class BoidsSimulationApp {
 
   /**
    * @private
+   * @type {HTMLCanvasElement}
+   */
+  zoomCanvas;
+
+  /**
+   * @private
    * @type {CanvasRenderingContext2D}
    */
   ctx;
+
+  /**
+   * @private
+   * @type {CanvasRenderingContext2D}
+   */
+  ctxZoom;
 
   /**
    * @type {BoidsBehavior}
@@ -307,12 +326,17 @@ class BoidsSimulationApp {
     //console.log('BoidsSimulationApp - Setup');
     
     this.canvas = document.createElement('canvas');
+    this.zoomCanvas = document.createElement('canvas');
     this.canvas.width = CANVAS_WIDTH;
     this.canvas.height = CANVAS_HEIGHT;
+    this.zoomCanvas.width = CANVAS_WIDTH;
+    this.zoomCanvas.height = CANVAS_HEIGHT;
 
     document.body.append(this.canvas);
+    document.body.append(this.zoomCanvas);
 
     this.ctx = this.canvas.getContext('2d');
+    this.ctxZoom = this.zoomCanvas.getContext('2d');
 
     const boids = Array(20).fill(0).map(() => boid(Math.random() * 300, Math.random() * 300));
     this.boidsBehavior = new BoidsBehavior(boids);
@@ -351,8 +375,10 @@ class BoidsSimulationApp {
     // renderização aqui
     render: {
       drawRect(this.ctx, vec2(0, 0), this.canvas.width, this.canvas.height, 'white');
+      drawRect(this.ctxZoom, vec2(0, 0), this.zoomCanvas.width, this.zoomCanvas.height, '#333');
       
       this.boidsBehavior.render(this.ctx);
+      this.boidsBehavior.render(this.ctxZoom, 2);
     }
   }
 
