@@ -2,7 +2,7 @@ import { seeking } from './boid.js';
 import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawLine, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
-import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mul, mulInPlace, normalize, normalizeInPlace, scalarDiv, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub } from './vector2-math.js';
+import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mul, mulInPlace, normalize, normalizeInPlace, scalarDiv, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub, subInPlace } from './vector2-math.js';
 import { vec2 } from './vectors.js';
 
 const CANVAS_WIDTH = 800 * .7;
@@ -271,7 +271,7 @@ class BoidsBehavior {
    */
   static render(camera, ctx, boids, scale = 1) {
     const scaleVector = vec2(ctx.canvas.width / camera.dimensions.x, ctx.canvas.height / camera.dimensions.y);
-    const transformVector = vec2(0, 0); // @todo João, terminar aqui
+    const transformVector = subInPlace(vec2(0, 0), mulInPlace(sub(camera.position, scalarDiv(camera.dimensions, 2)), scaleVector));
 
     for (const boid of boids) {
       if (camera.isPointInsideVisibleRange(boid.position)) {
