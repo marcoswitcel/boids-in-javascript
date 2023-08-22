@@ -1,3 +1,4 @@
+import { seeking } from './boid.js';
 import { applyForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawLine, drawRect } from './rendering.js';
 import { setDocumentTitle } from './utils.js';
@@ -231,7 +232,7 @@ class BoidsBehavior {
          * @todo João, por causa da forma como implementei o resultado não está de acordo com os exemplos
          * @reference https://natureofcode.com/book/chapter-6-autonomous-agents/#613-flocking
          */
-        // BoidsBehavior.seek(boids, sum);
+        seeking(currentBoid, sum);
       }
     }
   }
