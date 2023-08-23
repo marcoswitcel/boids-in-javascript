@@ -74,7 +74,7 @@ class AnimationFrameLoop {
 }
 
 /**
- * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, size: number, maxSpeed: number, maxForce: number }} Boid
+ * @typedef {{ position: Vector2, velocity: Vector2, acceleration: Vector2, size: number, maxSpeed: number, maxForce: number, color: string }} Boid
  */
 
 /**
@@ -84,7 +84,7 @@ class AnimationFrameLoop {
  * @returns {Boid}
  */
 const boid = (x, y) => ({ position: { x, y, }, velocity: { x: 0, y: 0, }, acceleration: { x: 0, y: 0 },
-                          size: 10, maxSpeed: 50, maxForce: 10, });
+                          size: 10, maxSpeed: 50, maxForce: 10, color: 'blue', });
 
 class BoidsBehavior {
 
@@ -277,8 +277,8 @@ class BoidsBehavior {
         // @note João, boid.size é o número da largura esperada da figura, então no caso de uma esfera seria o diâmetro
         const radius = boid.size / 2;
         const position = add(transformVector, mul(boid.position, scaleVector));
-        drawCircle(ctx, position, radius * scale, 'blue');
-        drawLine(ctx, position, add(position, mul(normalize(boid.velocity), scalarMul(scaleVector, boid.size))), 'blue', scale)
+        drawCircle(ctx, position, radius * scale, boid.color);
+        drawLine(ctx, position, add(position, mul(normalize(boid.velocity), scalarMul(scaleVector, boid.size))), boid.color, scale)
       }
     }
 
@@ -391,7 +391,15 @@ class BoidsSimulationApp {
     this.ctx = this.canvas.getContext('2d');
     this.ctxZoom = this.zoomCanvas.getContext('2d');
 
-    const boids = Array(20).fill(0).map(() => boid(Math.random() * 300, Math.random() * 300));
+    const boids = Array(20).fill(0).map(() => boid(Math.random() * CANVAS_WIDTH, Math.random() * CANVAS_HEIGHT));
+    boids.forEach((boid) => {
+      const r = Math.floor((Math.random() * 150)) + 50;
+      const g = Math.floor((Math.random() * 150)) + 50;
+      const b = Math.floor((Math.random() * 150)) + 50;
+
+      boid.color = `rgb(${r}, ${g}, ${b})`;
+    });
+
     this.boidsBehavior = new BoidsBehavior(boids);
 
     this.canvas.addEventListener('mousemove', (event) => {
