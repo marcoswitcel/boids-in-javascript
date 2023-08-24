@@ -295,7 +295,7 @@ class BoidsBehavior {
     const transformVector = subInPlace(vec2(0, 0), mulInPlace(sub(camera.position, scalarDiv(camera.dimensions, 2)), scaleVector));
 
     for (const boid of boids) {
-      if (camera.isPointInsideVisibleRange(boid.position)) {
+      if (camera.isPointInsideVisibleRange(boid.position, boid.size / 2)) {
         // @note João, boid.size é o número da largura esperada da figura, então no caso de uma esfera seria o diâmetro
         const radius = boid.size / 2;
         const position = add(transformVector, mul(boid.position, scaleVector));
@@ -339,14 +339,15 @@ class Camera {
 
   /**
    * @param {Vector2} point 
+   * @param {number} radius
    * 
    * @returns {boolean}
    */
-  isPointInsideVisibleRange(point) {
+  isPointInsideVisibleRange(point, radius = 0) {
     const start = sub(this.position, scalarDiv(this.dimensions, 2));
     const end = add(this.position, scalarDiv(this.dimensions, 2));
-    return start.x <= point.x && point.x <= end.x &&
-          start.y <= point.y && point.y <= end.y;
+    return start.x <= (point.x + radius) && (point.x - radius) <= end.x &&
+          start.y <= (point.y + radius) && (point.y - radius) <= end.y;
   }
 }
 
