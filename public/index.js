@@ -433,10 +433,8 @@ class BoidsSimulationApp {
     let scale = 1; // @todo João, analisar aonde esse campo ficaria bem
     this.canvas.addEventListener('wheel', (event) => {
       scale += event.deltaY * 0.001;
-      console.log(scale);
       scale = between(scale, 1, 2); // @note João, não testei muito, mas aparentemente funciona bem com diferenças maiores
       this.zoomedCam.dimensions = vec2(CANVAS_WIDTH / scale, CANVAS_HEIGHT / scale)
-      console.log(JSON.stringify(this.zoomedCam.dimensions));
     });
   }
   
