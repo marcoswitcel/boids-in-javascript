@@ -1,5 +1,5 @@
 import { seeking } from './boid.js';
-import { applyForce } from './physical-concepts.js';
+import { applyForce, rotateForce } from './physical-concepts.js';
 import { clearCanvas, drawCircle, drawLine, drawRect } from './rendering.js';
 import { between, setDocumentTitle } from './utils.js';
 import { add, addInPlace, dist, divInPlace, limitInPlace, mag, mul, mulInPlace, normalize, normalizeInPlace, scalarDiv, scalarDivInPlace, scalarMul, scalarMulInPlace, setMag, sub, subInPlace } from './vector2-math.js';
@@ -138,6 +138,8 @@ class BoidsBehavior {
     BoidsBehavior.cohesion(boids, desiredNeightbordistFactor);
 
     BoidsBehavior.seek(boids, BoidsBehavior.mouseTarget);
+
+    BoidsBehavior.turnOnWalls(boids);
   }
 
   /**
@@ -254,6 +256,26 @@ class BoidsBehavior {
       limitInPlace(steerForce, boid.maxForce);
 
       applyForce(boid, steerForce);
+    }
+  }
+
+  /**
+   * @param {Boid[]} boids 
+   * @returns {void}
+   */
+  static turnOnWalls(boids) {
+    for (const boid of boids) {
+      const margin = 20;
+
+      // @todo João, não deveria mencionar diretamente a resolução, mas enfim...
+      if (CANVAS_WIDTH - margin < boid.position.x ||
+        boid.position.x < margin ||
+        CANVAS_HEIGHT - margin < boid.position.y ||
+        boid.position.y < margin
+      ) {
+        // @todo João, ele só deveria rotacionar se está apontando para 
+        boid.velocity = rotateForce(boid.velocity, -1);
+      }
     }
   }
 
